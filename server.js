@@ -1,7 +1,8 @@
-require('dotenv').config();
+//require('dotenv').config();
 
+process.loadEnvFile(); //<--- nueva forma de cargar .env sin dotenv
 
-var express = require('express');
+const express = require('express');
 var serverExpress = express();
 
 

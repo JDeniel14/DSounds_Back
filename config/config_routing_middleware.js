@@ -1,7 +1,9 @@
 
-
+const routingDsoundsInfo = require('../routing/DsoundsInfoRouting')
 
 module.exports = function(servExpress){
 
-    //servExpress.use();
+    servExpress.use('/api/DsoundsInfo',routingDsoundsInfo );
+
+    
 }
