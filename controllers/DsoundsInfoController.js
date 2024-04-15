@@ -5,7 +5,7 @@ module.exports={
 
         try {
     
-            console.log('Obteniendo eventos...');
+            
     
             const ticketmaster_consumer = process.env.TICKETMASTER_CONSUMER;
             const ticketmaster_secret = process.env.TICKETMASTER_SECRET;
@@ -15,7 +15,7 @@ module.exports={
             await axios.get(
                 `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${ticketmaster_consumer}&size=15&locale=es&countryCode=es`
             ).then(function(resp){
-                console.log('resp..', resp.data);
+                
                 eventosSpain = resp.data; 
             }).catch(function(error){
                 console.log('error...', error);

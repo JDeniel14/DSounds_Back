@@ -8,7 +8,8 @@ var esquemaDisco = new mongoose.Schema(
         FechaLanzamiento:{type:String},
         Resumen:{type:String},
         Canciones:{type:[String]},
-        ImagenBASE64:{type:String}
+        UrlImagen:{type:String},
+        Precio:{type:Number}
     }
 );
 
