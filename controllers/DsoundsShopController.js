@@ -41,5 +41,43 @@ module.exports = {
                         otrosdatos: null
             })
         }
+    },
+
+    /**
+     * 
+     * @param {Request} req 
+     * @param {Response} res 
+     * @param {*} next 
+     */
+    ObtenerDiscoById: async(req,res,next)=>{
+        try {
+            let {idDisco} = req.query;
+            console.log('id disco a buscar...',idDisco)
+
+            let disco = await Disco.findById(idDisco);
+
+            if(disco != undefined){
+                return res.status(200).send({
+                    codigo: 0,
+                    mensaje: 'Disco recuperados correctamente',
+                    error: null,
+                    datosCliente: null,
+                    token: null,
+                    otrosdatos: disco
+            })
+        }else{
+            
+            throw new Error('error obteniendo discos...')
+        }
+        } catch (error) {
+            return res.status(400).send({
+                        codigo: 1,
+                        mensaje: 'Ha ocurrido un error al recuperar el disco de la bd',
+                        error: error,
+                        datosCliente: null,
+                        token: null,
+                        otrosdatos: null
+            })
+        }
     }
 }

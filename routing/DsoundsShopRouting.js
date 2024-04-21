@@ -6,6 +6,6 @@ const DsoundsShopController = require('../controllers/DsoundsShopController');
 
 
 router.get('/ObtenerDiscos', DsoundsShopController.ObtenerDiscos);
-//router.get('/ObtenerDisco',DsoundsShopController.ObtenerDiscoById);
+router.get('/ObtenerDiscoById',DsoundsShopController.ObtenerDiscoById);
 
 module.exports =router;
