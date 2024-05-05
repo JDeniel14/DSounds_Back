@@ -1,14 +1,14 @@
 
 
 const mongoose = require('mongoose');
-
+const axios = require('axios')
 
 var Cliente = require('../models/Clientes')
 var Disco = require('../models/Disco');
 var Direccion = require('../models/direccion');
 var Pedido = require('../models/pedido')
 
-
+const GEOAPI_KEY = process.env.GEOAPI_KEY;
 
 module.exports = {
     ObtenerDiscos : async(req,res,next)=>{
@@ -79,5 +79,38 @@ module.exports = {
                         otrosdatos: null
             })
         }
-    }
+    },
+
+    /**
+     * 
+     * @param {Request} req 
+     * @param {Response} res 
+     * @param {*} next 
+     */
+    recuperarProvincias: async (req,res,next)=>{
+        try {
+            console.log('hola..121321', GEOAPI_KEY)
+            let _resp = await axios.get(`https://apiv1.geoapi.es/provincias?type=JSON&key=${GEOAPI_KEY}&sandbox=1`);
+            console.log(_resp.data)
+            let _provincias = _resp.data.data;
+            console.log('provs....',_provincias)
+            res.status(200).send(_provincias);
+        } catch (error) {
+            res.status(400).send([]);
+        }
+    },
+
+    recuperarMunicipios: async(req,res,next)=> {
+        try {
+            let {codpro}=req.query;
+            
+
+            let _resp=await axios.get(`https://apiv1.geoapi.es/municipios?CPRO=${codpro}&type=JSON&key=${process.env.GEOAPI_KEY}&sandbox=0`);
+            let _municipios=_resp.data.data;
+            
+            res.status(200).send(_municipios)
+        } catch (error) {
+            res.status(400).send([]);
+        }
+    },
 }
