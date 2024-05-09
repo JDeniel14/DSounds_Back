@@ -7,7 +7,8 @@ const DsoundsShopController = require('../controllers/DsoundsShopController');
 
 router.get('/ObtenerDiscos', DsoundsShopController.ObtenerDiscos);
 router.get('/ObtenerDiscoById',DsoundsShopController.ObtenerDiscoById);
-router.post('/RecuperarProvincias',DsoundsShopController.recuperarProvincias);
-router.get('/RecuperarMunicipios',DsoundsShopController.recuperarMunicipios);
+router.post('/RecuperarProvincias',DsoundsShopController.RecuperarProvincias);
+router.get('/RecuperarMunicipios',DsoundsShopController.RecuperarMunicipios);
+router.post('/RealizarPedido', DsoundsShopController.RealizarPedido);
 
 module.exports =router;

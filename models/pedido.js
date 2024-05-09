@@ -7,7 +7,7 @@ var esquemaPedido= new mongoose.Schema(
         elementosPedido:[
             {
                 disco:{type:mongoose.Schema.Types.ObjectId, ref:'Disco'},
-                cantidadDisco:{type:Number, required:true,default:1},
+                cantidadElemento:{type:Number, required:true,default:1},
 
             }
         ],

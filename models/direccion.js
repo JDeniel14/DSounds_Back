@@ -6,15 +6,15 @@ var esquemaDireccion= new mongoose.Schema(
         cp:{type:Number , required:[true, '* Código postal es requerido'], match:[/^\d{5}$/, '* Formato de código postal invalido cp. ej: (28850)']},
         pais:{type:String , required:[true, '* País es requerido']},
         provincia:{
-                CPRO:{type:String, required:true},
-                CCOM:{type:String, required:true},
-                PRO:{type:String, required:true}
+                CPRO:{type:String,},
+                CCOM:{type:String,},
+                PRO:{type:String, }
          },
         municipio:{
-                CPRO:{type:String, required:true},
-                CMUM:{type:String, required:true},
-                DMUN50:{type:String, required:true},
-                CUN:{type:String, required:true}
+                CPRO:{type:String, },
+                CMUM:{type:String, },
+                DMUN50:{type:String, },
+                CUN:{type:String,}
          },
         esPrincipal:{type:Boolean , default:false},
         esFacturacion:{type:Boolean , default:false},
