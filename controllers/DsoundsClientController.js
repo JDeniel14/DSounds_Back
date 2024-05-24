@@ -8,7 +8,8 @@ const jwt = require('jsonwebtoken');
 var Cliente = require('../models/Clientes')
 var Disco = require('../models/Disco');
 var Direccion = require('../models/direccion');
-var Pedido = require('../models/pedido')
+var Pedido = require('../models/pedido');
+const pedido = require('../models/pedido');
 
 let MAIL_ACCOUNT = process.env.MAIL_ACCOUNT;
 let MAIL_PRIVATE = process.env.MAIL_PRIVATE;
@@ -306,6 +307,48 @@ module.exports ={
                 {
                     codigo: 1,
                     mensaje: 'error al activar la cuenta del cliente',
+                    error: error,
+                    datosCliente: null,
+                    token: null,
+                    otrosdatos: null
+                }
+            )
+        }
+    },
+
+    CancelarPedido: async(req,res,next)=>{
+        try {
+            let {idPedido} = req.query;
+
+            let _resultadoUpdatePedido = await Pedido.findByIdAndUpdate(idPedido,{'estadoPedido':'Cancelado'});
+            
+
+            if(_resultadoUpdatePedido){
+                let _clienteActualizado = await Cliente.findOne({pedidos: idPedido}).populate([
+                    {
+                      path: "pedidos",
+                      model: "Pedido",
+                      populate: { path: "elementosPedido.disco", model: "Disco" },
+                    },
+                    { path: "direcciones", model: "Direccion" },
+                  ]);
+
+
+                res.status(200).send(
+                    {
+                        codigo: 0,
+                        mensaje: `Pedido con id ${idPedido} cancelado`,
+                        error: null,
+                        datosCliente: _clienteActualizado,
+                        token: null,
+                        otrosdatos: null
+                    })
+            }
+        } catch (error) {
+            res.status(400).send(
+                {
+                    codigo: 1,
+                    mensaje: 'error al cancelar el pedido',
                     error: error,
                     datosCliente: null,
                     token: null,
