@@ -88,7 +88,7 @@ module.exports ={
             var _existeCliente = await Cliente.findOne({'cuenta.email':req.body.email}) ;
             console.log(_existeCliente)
             if(_existeCliente == null || _existeCliente == undefined ){
-                console.log("holaaa")
+                
                 
             var _resultadoInsert = await new Cliente(
                 {
@@ -349,6 +349,84 @@ module.exports ={
                 {
                     codigo: 1,
                     mensaje: 'error al cancelar el pedido',
+                    error: error,
+                    datosCliente: null,
+                    token: null,
+                    otrosdatos: null
+                }
+            )
+        }
+    },
+
+
+    ActualizarPassword: async(req,res, next)=>{
+        try {
+            let {passwordActual, passwordNueva, email}=req.body;
+
+            let _datosCliente = await Cliente.findOne({'cuenta.email':email});
+            let operacionCorrecta = false;
+            if(_datosCliente){
+                let passCoinciden = bcrypt.compareSync(passwordActual, _datosCliente.cuenta.password);
+
+                if(passCoinciden){
+                    operacionCorrecta = true;
+                    let passNuevaHass = bcrypt.hashSync(passwordNueva,10);
+                    let _resUpdateCliente = await Cliente.updateOne({'cuenta.email':email},{$set:{'cuenta.password': passNuevaHass}});
+
+                    if(_resUpdateCliente){
+                        let _datosClienteActualizados = await Cliente.findOne({'cuenta.email':email});
+
+                        let _jwtCliente = jwt.sign(
+                            {
+                                nombre:_datosClienteActualizados.nombre,
+                                apellidos:_datosClienteActualizados.apellidos,
+                                email:_datosClienteActualizados.cuenta.email,
+                                idCliente:_datosClienteActualizados._id
+                            },
+                            process.env.JWT_SECRETKEY,
+                            {
+                                expiresIn:'24h',
+                                issuer:'http://localhost:3003'
+                            }
+                        );
+
+                        if(operacionCorrecta){
+                            res.status(200).send(
+                                {
+                                            
+                                codigo: 0,
+                                mensaje: `La contraseña se ha actualizado correctamente`,
+                                error: null,
+                                datosCliente: _datosClienteActualizados,
+                                token: _jwtCliente,
+                                otrosdatos: null
+                                }
+                            )
+                        }else{
+                            res.status(500).send(
+                                {
+                                    codigo: 1,
+                                    mensaje: 'Error al intentar actualizar la contraseña',
+                                    error: null,
+                                    datosCliente: null,
+                                    token: null,
+                                    otrosdatos: null
+                                }
+                            )
+                        }
+                    }else{
+                        operacionCorrecta = false;
+                    }
+                }else{
+                    operacionCorrecta = false;
+                }
+            }
+            
+        } catch (error) {
+            res.status(500).send(
+                {
+                    codigo: 1,
+                    mensaje: 'Error al intentar actualizar la contraseña',
                     error: error,
                     datosCliente: null,
                     token: null,
