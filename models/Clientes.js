@@ -26,10 +26,10 @@ var esquemaCliente = new mongoose.Schema(
                                   minlength:[3, "* El usuario debe contener al menos 3 caracteres"],
                                   maxlenght:[25,'* Minimo 25 caracteres para la contraseña']},
             
-            telefono:{type:String, match:[new RegExp('^\\d{3}\\s?(\\d{2}\\s?){2}\\d{2}$'),"* Formato de teléfono incorrecto, 111 22 33 44"] },
-
-            imagenAvatarBASE64:{type:String}
         },
+        telefono:{type:String, match:[new RegExp(/^\d{3}\s\d{3}\s\d{3}$/),"* Formato de teléfono incorrecto, 111 22 33 44"] },
+        genero: {type: String},
+        fechaNacimiento:{type:Date},
         direcciones:[
             {type: mongoose.Schema.Types.ObjectId, ref:"Direccion"} 
         ],

@@ -10,5 +10,5 @@ router.post('/Login', DsoundsClientController.Login);
 router.get('/ActivarCuenta',DsoundsClientController.ActivarCuenta);
 router.get('/CancelarPedido', DsoundsClientController.CancelarPedido);
 router.post('/ActualizarPassword',DsoundsClientController.ActualizarPassword);
-
+router.post('/ActualizarDatosCliente', DsoundsClientController.ActualizarDatosCliente);
 module.exports = router;

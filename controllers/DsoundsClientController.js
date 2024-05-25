@@ -102,7 +102,9 @@ module.exports ={
                         imagenAvatarBASE64:''
                     },
                     direcciones:[],
-                    pedidos: []
+                    pedidos: [],
+                    genero:'',
+                    
                 }
             ).save();
 
@@ -374,7 +376,14 @@ module.exports ={
                     let _resUpdateCliente = await Cliente.updateOne({'cuenta.email':email},{$set:{'cuenta.password': passNuevaHass}});
 
                     if(_resUpdateCliente){
-                        let _datosClienteActualizados = await Cliente.findOne({'cuenta.email':email});
+                        let _datosClienteActualizados = await Cliente.findOne({'cuenta.email':email}).populate([
+                            {
+                              path: "pedidos",
+                              model: "Pedido",
+                              populate: { path: "elementosPedido.disco", model: "Disco" },
+                            },
+                            { path: "direcciones", model: "Direccion" },
+                          ]);;
 
                         let _jwtCliente = jwt.sign(
                             {
@@ -427,6 +436,76 @@ module.exports ={
                 {
                     codigo: 1,
                     mensaje: 'Error al intentar actualizar la contraseña',
+                    error: error,
+                    datosCliente: null,
+                    token: null,
+                    otrosdatos: null
+                }
+            )
+        }
+    },
+
+    ActualizarDatosCliente: async (req,res,next)=>{
+        try {
+            let {datosNuevosCliente, email} = req.body;
+
+            console.log('datos recibidos...', datosNuevosCliente,email);
+
+            
+
+            let _resUpdateCliente = await Cliente.updateOne({'cuenta.email':email}, datosNuevosCliente);
+            if(_resUpdateCliente){
+                let _datosClienteActualizados = await Cliente.findOne({'cuenta.email':datosNuevosCliente.cuenta.email}).populate([
+                    {
+                      path: "pedidos",
+                      model: "Pedido",
+                      populate: { path: "elementosPedido.disco", model: "Disco" },
+                    },
+                    { path: "direcciones", model: "Direccion" },
+                  ]);;
+
+                let _jwtCliente = jwt.sign(
+                    {
+                        nombre:_datosClienteActualizados.nombre,
+                        apellidos:_datosClienteActualizados.apellidos,
+                        email:_datosClienteActualizados.cuenta.email,
+                        idCliente:_datosClienteActualizados._id
+                    },
+                    process.env.JWT_SECRETKEY,
+                    {
+                        expiresIn:'24h',
+                        issuer:'http://localhost:3003'
+                    }
+                );
+
+                res.status(200).send(
+                    {
+                                
+                    codigo: 0,
+                    mensaje: `Datos del perfil actualizados correctamente`,
+                    error: null,
+                    datosCliente: _datosClienteActualizados,
+                    token: _jwtCliente,
+                    otrosdatos: null
+                    }
+                )
+            }else{
+                res.status(500).send(
+                    {
+                        codigo: 1,
+                        mensaje: 'Error al intentar actualizar los datos del cliente',
+                        error: null,
+                        datosCliente: null,
+                        token: null,
+                        otrosdatos: null
+                    }
+                )
+            }
+        } catch (error) {
+            res.status(500).send(
+                {
+                    codigo: 1,
+                    mensaje: 'Error al intentar actualizar los datos del cliente',
                     error: error,
                     datosCliente: null,
                     token: null,
