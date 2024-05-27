@@ -462,7 +462,7 @@ module.exports ={
                       populate: { path: "elementosPedido.disco", model: "Disco" },
                     },
                     { path: "direcciones", model: "Direccion" },
-                  ]);;
+                  ]);
 
                 let _jwtCliente = jwt.sign(
                     {
@@ -506,6 +506,112 @@ module.exports ={
                 {
                     codigo: 1,
                     mensaje: 'Error al intentar actualizar los datos del cliente',
+                    error: error,
+                    datosCliente: null,
+                    token: null,
+                    otrosdatos: null
+                }
+            )
+        }
+    },
+
+    OperarDireccion: async(req,res,next)=>{
+        try {
+            
+            let {direccionOperar,operacion,email} = req.body;
+            console.log('datos recibidos...',direccionOperar, operacion, email);
+
+            let resOperacion = false;
+            let direccionCrear= {
+                _id: new mongoose.Types.ObjectId(),
+                calle: direccionOperar.calle,
+                pais: direccionOperar.pais,
+                cp:direccionOperar.cp,
+                provincia:{
+                    CCOM: direccionOperar.provincia.CCOM ? direccionOperar.provincia.CCOM : "0",
+                    CPRO:direccionOperar.provincia.CPRO ? direccionOperar.provincia.CPRO : "0",
+                    PRO: direccionOperar.provincia.PRO ? direccionOperar.provincia.PRO : "a"
+                },
+                municipio:{
+                    CMUM: direccionOperar.municipio.CMUM ?direccionOperar.municipio.CMUM:"0",
+                    CPRO:direccionOperar.municipio.CPRO ? direccionOperar.municipio.CPRO : "0",
+                    DMUN50:direccionOperar.municipio.DMUN50 ? direccionOperar.municipio.DMUN50 : "a",
+                    CUN: direccionOperar.municipio.CUN ? direccionOperar.municipio.CUN :"0"
+                },
+                esPrincipal: direccionOperar.esPrincipal,
+                esFacturacion: direccionOperar.esFacturacion,
+              }
+              console.log('direccion let...', direccionCrear)
+
+            switch (operacion) {
+                case 'CREAR':
+                    let _resInsertDireccion = await new Direccion(direccionCrear).save();
+                    let _updateCliente = await Cliente.updateOne({'cuenta.email':email}, {$push: {direcciones: _resInsertDireccion._id}});
+
+                    if(_updateCliente){
+                        resOperacion= true;
+                    }
+                    break;
+            
+                case 'ELIMINAR':
+
+                    let _resDeleteDireccion = await Direccion.deleteOne({'_id':direccionOperar._id});
+                    let _updateClienteDelete = await Cliente.updateOne({'cuenta.email':email},{$pull:{direcciones:direccionOperar._id}})
+                    if(_updateClienteDelete){
+                        resOperacion = true;
+                    }
+                    break;
+
+                case 'MODIFICAR':
+                    let _resUpdateDireccion = await Direccion.updateOne({_id:direccionOperar._id}, {$set:direccionOperar});
+                    if(_resUpdateDireccion){
+                        resOperacion= true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if(resOperacion){
+                let _clienteActualizado = await Cliente.findOne({'cuenta.email':email}).populate([
+                    {
+                      path: "pedidos",
+                      model: "Pedido",
+                      populate: { path: "elementosPedido.disco", model: "Disco" },
+                    },
+                    { path: "direcciones", model: "Direccion" },
+                  ]);
+
+
+                  res.status(200).send({
+                            codigo: 0,
+                            mensaje: 'Operación realizada correctamente',
+                            error: null,
+                            datosCliente: _clienteActualizado,
+                            token: null,
+                            otrosdatos: null
+                        
+                  })
+            }else{
+                res.status(500).send(
+                    {
+                        codigo: 1,
+                        mensaje: 'Error al intentar realizar la operación sobre la dirección del cliente',
+                        error: null,
+                        datosCliente: null,
+                        token: null,
+                        otrosdatos: null
+                    }
+                )
+            }
+
+
+
+        } catch (error) {
+            res.status(500).send(
+                {
+                    codigo: 1,
+                    mensaje: 'Error al intentar realizar la operación sobre la dirección del cliente',
                     error: error,
                     datosCliente: null,
                     token: null,
