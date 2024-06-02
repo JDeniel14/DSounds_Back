@@ -7,5 +7,11 @@ const DsoundsSpotifyController = require('../controllers/DsoundsSpotifyControlle
 router.get('/LoginSpotify', DsoundsSpotifyController.LoginSpotify);
 router.get('/CallbackSpotify',DsoundsSpotifyController.CallbackSpotify);
 router.post('/GetRefreshTokenSpotify', DsoundsSpotifyController.GetRefreshToken);
+router.get('/ObtenerPerfilSpotify',DsoundsSpotifyController.ObtenerPerfilSpotify);
+router.get('/ObtenerPlaylistUsuario', DsoundsSpotifyController.ObtenerPlaylistUsuario);
+router.post('/BuscarAlbumSpotify', DsoundsSpotifyController.BuscarAlbumSpotify);
+router.post('/AddDiscoToPlaylist', DsoundsSpotifyController.AddDiscoToPlaylist);
+
+
 
 module.exports=router;
