@@ -199,7 +199,7 @@ module.exports = {
         let _direccionesCliente = clienteActual.direcciones;
 
         if (datosPagoCliente.DireccionFactura !== undefined) {
-          
+          console.log('factura')
           _dirAGuardar = {
             direccionEnvio: {
               _id: new mongoose.Types.ObjectId(),
@@ -224,29 +224,31 @@ module.exports = {
           };
           
         } else {
-          
+          console.log('no factura')
           _dirAGuardar = {
             direccionEnvio: {
               _id: new mongoose.Types.ObjectId(),
               calle: datosPagoCliente.DireccionEnvio.calle,
               pais: datosPagoCliente.DireccionEnvio.pais,
+              cp: datosPagoCliente.DireccionEnvio.cp,
               provincia: datosPagoCliente.DireccionEnvio.provincia,
               municipio: datosPagoCliente.DireccionEnvio.municipio,
               esPrincipal: false,
               esFacturacion: false,
-            },
+            }
           };
+          console.log(_dirAGuardar)
         }
         let direccionEnvio;
         let direccionFacturacion;
         let resInsDireccionEnvio;
         let resInsDireccionFactura;
-
+        console.log('hola')
         
         if (_direccionesCliente.length == 0) {
-          
-          if (datosPagoCliente.tipoDireccionFactura == "IgualEnvio") {
-            
+          console.log('hol2...',datosPagoCliente.tipoDireccionFactura)
+          if (datosPagoCliente.tipoDireccionFactura != undefined && datosPagoCliente.tipoDireccionFactura == "IgualEnvio") {
+            console.log('factura igual')
             _dirAGuardar.direccionEnvio.esFacturacion = true;
             _dirAGuardar.direccionEnvio.esPrincipal = true;
 
@@ -254,25 +256,31 @@ module.exports = {
               _dirAGuardar.direccionEnvio
             ).save();
             direccionEnvio = _dirAGuardar.direccionEnvio;
+
           } else {
-            _dirAGuardar.direccionFacturacion.esFacturacion = true;
-            _dirAGuardar.direccionFacturacion.esPrincipal = false;
+            console.log('no tiene direcciones...', datosPagoCliente)
+            
+            if(_dirAGuardar.direccionFacturacion !== undefined){
+              console.log(direccionFacturacion , _dirAGuardar.direccionFacturacion);
+              _dirAGuardar.direccionFacturacion.esFacturacion = true;
+              _dirAGuardar.direccionFacturacion.esPrincipal = false;
+              direccionFacturacion = _dirAGuardar.direccionFacturacion;
 
-            direccionFacturacion = _dirAGuardar.direccionFacturacion;
-            console.log(direccionFacturacion);
-            resInsDireccionFactura = await new Direccion(
-              direccionFacturacion
-            ).save();
+              resInsDireccionFactura = await new Direccion(
+                direccionFacturacion
+              ).save();
+            }
 
-
+            console.log('direnvioooo',_dirAGuardar.direccionEnvio)
             _dirAGuardar.direccionEnvio.esFacturacion = false;
             _dirAGuardar.direccionEnvio.esPrincipal = true;
             direccionEnvio = _dirAGuardar.direccionEnvio;
             resInsDireccionEnvio = await new Direccion(direccionEnvio).save();
           }
         } else {
-          
+          console.log('no tiene direcciones...', datosPagoCliente, datosPagoCliente.tipodireccionenvio)
           if (datosPagoCliente.tipodireccionenvio == "otradireccion") {
+            console.log('envio distinta')
             
             _dirAGuardar.direccionEnvio.esFacturacion =
               datosPago.tipoDireccionFactura == "igualenvio";
@@ -281,7 +289,7 @@ module.exports = {
             resInsDireccionEnvio = await new Direccion(direccionEnvio).save();
           }
           if (datosPagoCliente.tipoDireccionFactura == "otra") {
-          
+            console.log('factura otra')
             _dirAGuardar.direccionFacturacion.esFacturacion = true;
             _dirAGuardar.direccionFacturacion.esPrincipal = false;
 
@@ -292,22 +300,26 @@ module.exports = {
           }
         }
 
-        
+        console.log('a actualizar')
         let _resUpdateCliente = await Cliente.updateOne(
           { _id: clienteActual._id },
           { $push: { pedidos: _nuevoPedidoDsounds._id } }
         );
-        if (direccionEnvio)
+        if (direccionEnvio){
+          console.log('envio actualizada')
           _resUpdateCliente = await Cliente.updateOne(
             { _id: clienteActual._id },
             { $push: { direcciones: resInsDireccionEnvio._id } }
           );
-        if (direccionFacturacion)
+        }
+        if (direccionFacturacion){
+          console.log('factura actualizada')
           _resUpdateCliente = await Cliente.updateOne(
             { _id: clienteActual._id },
             { $push: { direcciones: resInsDireccionFactura._id } }
           );
         
+        }
         
         let _clienteActualizado = await Cliente.findById(
           clienteActual._id
