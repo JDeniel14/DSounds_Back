@@ -162,13 +162,13 @@ module.exports ={
             let _datosCliente;
             
             if(token ){
-                console.log('hola1')
+                
                 _datosCliente = await Cliente.findById(token).populate([
                     { path: 'pedidos', model: 'Pedido', populate: { path: 'elementosPedido.disco', model: 'Disco' } },
                     { path: 'direcciones', model: 'Direccion' }
                 ]);
                 
-                 console.log('hola2')
+                 
                 if(_datosCliente){
                     if(_datosCliente.cuenta.cuentaActiva){
                         console.log('datos del cliente obtenidos para login...',_datosCliente);
@@ -250,7 +250,7 @@ module.exports ={
                 throw new Error('No hay datos en el body de la request para hacer el login');
             }
         } catch (error) {
-            res.status(500).send(
+            res.status(400).send(
                 {
                     codigo:1,
                     mensaje:'No se ha podido realizar el login',
