@@ -490,7 +490,7 @@ module.exports ={
                     }
                 )
             }else{
-                res.status(500).send(
+                res.status(400).send(
                     {
                         codigo: 1,
                         mensaje: 'Error al intentar actualizar los datos del cliente',
