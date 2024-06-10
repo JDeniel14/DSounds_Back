@@ -87,7 +87,7 @@ module.exports={
                 {
                     "customer":clienteStripeId,
                     "source":cardId,
-                    "amount": (totalPedido * 100).toString(),
+                    "amount": Math.round(totalPedido * 100).toString(),
                     "currency": "eur",
                     "description":idPedido
                 }

@@ -183,12 +183,12 @@ module.exports = {
 
       let _cardId = await StripeService.createCardStripe(_customerId);
       if (!_cardId) throw new Error("Error al crear card de stripe...");
-
+      console.log('id pedido....',pedido, _nuevoPedidoDsounds._id.toString())
       let _pagoStripe = await StripeService.createChargeStripe(
         _customerId,
         _cardId,
         pedido.totalPedido,
-        pedido.idPedido
+        _nuevoPedidoDsounds._id.toString()
       );
       
       if (_pagoStripe) {
